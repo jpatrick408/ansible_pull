@@ -1,0 +1,19 @@
+#I took stole this play from Techno Tim.
+#You can get it at https://technotim.live/posts/ansible-automation/+
+
+#Set the timezone
+- name: set timezone
+  ansible.builtin.shell: timedatectl set-timezone America/Chicago
+
+- name: Make sure timesyncd is stopped
+  ansible.builtin.systemd:
+    name: systemd-timesyncd.service
+    state: stopped
+
+- name: Copy over the timesyncd config
+  ansible.builtin.template: src=../files/002-timesyncd.conf dest=/etc/systemd/timesyncd.conf
+
+- name: Make sure timesyncd is started
+  ansible.builtin.systemd:
+    name: systemd-timesyncd.service
+    state: started

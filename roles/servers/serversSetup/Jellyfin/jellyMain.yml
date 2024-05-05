@@ -1,0 +1,25 @@
+#Load install play based on OS.  This will skip all of the other plays without display all of the messags.
+- name: Jellyfin - Install CIFS Utilities
+  ansible.builtin.package:
+    name: cifs-utils
+    state: latest
+
+- name: Creating SMB  Folder
+  ansible.builtin.file:
+    path: /home/[YOUR USERNAME]/mediaMount
+    state: directory
+
+- name: Jellyfin - Copying SMB Credentials
+  ansible.builtin.copy:
+    src: ../files/streamCreds
+    dest: /.streamCreds
+    mode: "0600"
+    owner: root
+    group: root
+    decrypt: true
+
+- ansible.builtin.import_tasks: serversSetup/Jellyfin/debBased.yml
+  when: ansible_os_family == "Debian"
+
+- ansible.builtin.import_tasks: serversSetup/Jellyfin/fedBased.yml
+  when: ansible_os_family == "RedHat"

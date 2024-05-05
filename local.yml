@@ -1,0 +1,39 @@
+F#Pretasks that installs updates on Linux machines
+- hosts: office
+  connection: local
+  become: true
+
+  pre_tasks:
+    - name: First Time Updates (Debian Based OS)
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: 'yes'
+      when: ansible_os_family == "Debian"
+
+    - name: First Time Update (Fedora Based OS)
+      ansible.builtin.dnf:
+        name: '*'
+        update_cache: yes
+        update_only: yes
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+#Executes Roles
+  tasks:
+      #Basic Linux Settings
+    - name: Basic Linux Setup
+      import_role:
+        name: base
+      when: inventory_hostname in groups["linMachines"]
+
+      #Laptop and Desktop Linux Setup
+    - name: Desktop and Laptop Setting
+      import_role:
+        name: workstations
+      when: inventory_hostname in groups["workstations"]
+
+      #Homelab Server Setup
+    - name: Servers
+      import_role:
+        name: servers
+      when: inventory_hostname in groups["servers"]

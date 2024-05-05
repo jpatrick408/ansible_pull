@@ -1,0 +1,21 @@
+#Set the local language
+- name: Add US English language
+  ansible.builtin.locale_gen:
+    name: en_US.UTF-8
+    state: present
+
+- name: Set US English language
+  ansible.builtin.locale_gen:
+    name: en_US.UTF-8
+    state: present
+  register: locale
+
+- name: Set US Englis as Default
+  ansible.builtin.command: localectl set-locale LANG=en_US.UTF-8
+  when: locale.changed
+
+- name: Remove GB English
+  ansible.builtin.locale_gen:
+    name: en_GB.UTF-8
+  when: locale.changed
+  

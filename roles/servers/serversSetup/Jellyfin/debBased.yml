@@ -1,0 +1,90 @@
+#Setup Jellyfin Media Server on Debian Based Systems
+- name: Jellyfin - Installing CIFS
+  ansible.builtin.apt:
+    state: latest
+    name: cifs-utils
+  when: not ansible_distribution == "Ubuntu"
+
+- name: Jellyfin - Setting enX1 IP Address
+  ansible.builtin.blockinfile:
+    path: /etc/network/interfaces
+    block: |
+      allow-hotplug enX1
+      iface enX1 inet static
+        address [YOUR SECOND IP]
+        netmask [YOUR SECOND SUBNET]
+        gateway [YOUR NAS' IP]
+  when: not ansible_distribution == "Ubuntu"
+
+- name: Jellyfin - Restarting Network Service
+  ansible.builtin.systemd_service:
+    name: networking.service
+    state: restarted
+  when: not ansible_distribution == "Ubuntu"
+
+- name: Enabling Universe Repo
+  ansible.builtin.command: add-apt-repository universe -y
+  become: yes
+
+- name: Jellyfin - Install Debian Dependencies
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg:
+      - curl
+      - gnupg
+    state: latest
+
+- name: Creating Keyring Folder
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+  become: yes
+
+- name: Adding Jellyfin key
+  ansible.builtin.copy:
+    src: ../../files/jellyfin.gpg
+    dest: /etc/apt/keyrings/jellyfin.gpg
+
+- name: Adding Jellyfin Repository
+  ansible.builtin.copy:
+    src: ../../files/jellyfin.sources
+    dest: /etc/apt/sources.list.d/jellyfin.sources
+
+- name: Update Repository
+  ansible.builtin.apt:
+    update_cache: yes
+#  become: yes
+
+- name: installing Jellyfin
+  ansible.builtin.package:
+    state: latest
+    name:
+      - jellyfin-server
+      - jellyfin-web
+      - jellyfin-ffmpeg6
+
+- name: Creating Share Folder
+  ansible.builtin.file:
+    path: /mnt/mediaMount
+    state: directory
+    owner: root
+    group: jellyfin
+
+- name: Jellyfin - Mounting Media Share
+  ansible.posix.mount:
+    src: //[YOUR NAS' IP] /media
+    path: /mnt/mediaMount
+    opts: "rw,credentials=/.streamCreds"
+    fstype: cifs
+    state: mounted
+
+- name: Enabling Jellyfin
+  ansible.builtin.service:
+    name: jellyfin
+    enable: yes
+    #state: started
+
+- name: Starting Jellyfin
+  ansible.builtin.service:
+    name: jellyfin
+    state: started

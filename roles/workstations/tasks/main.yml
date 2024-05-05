@@ -1,0 +1,23 @@
+#Setup My Laptop
+
+#Load Variables
+- ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Creating Temp Director
+  ansible.builtin.file:
+    path: /home/[YOUR USERNAME]/.tmp
+    state: directory
+    mode: '0777'
+
+- block:
+  - ansible.builtin.import_tasks: workstations_setup/001-setDarkMode.yml
+  - ansible.builtin.import_tasks: workstations_setup/002-addRPMFusion.yml
+    when: ansible_os_family == "RedHat"
+  - ansible.builtin.import_tasks: workstations_setup/003-setupFlatpak.yml
+  - ansible.builtin.import_tasks: workstations_setup/004-laptopApps.yml
+  - ansible.builtin.import_tasks: workstations_setup/005-installAngryIPScanner.yml
+  - ansible.builtin.import_tasks: workstations_setup/006-installDrawIO.yml
+  - ansible.builtin.import_tasks: workstations_setup/007-installVirtualBox.yml
+    when: inventory_hostname in groups["laptops"]
+  # - ansible.builtin.import_tasks: workstations_setup/010-setupWiFi.yml
+  - ansible.builtin.import_tasks: workstations_setup/011-theia.yml

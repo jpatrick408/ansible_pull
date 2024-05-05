@@ -1,0 +1,18 @@
+#Copy WiFi settings to laptop
+
+- name: Stopping Network Services
+  ansible.builtin.service:
+    name: NetworkManager
+    state: stopped
+
+- name: Copying WiFi settings
+  ansible.builtin.copy:
+    src: ../files/WiFi/
+    dest:  /etc/NetworkManager/system-connections/
+    mode: "0600"
+    decrypt: true
+
+- name: Starting Network Services
+  ansible.builtin.service:
+    name: NetworkManager
+    state: started

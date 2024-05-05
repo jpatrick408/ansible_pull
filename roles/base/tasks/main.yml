@@ -1,0 +1,19 @@
+#Load Variables
+- ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+#Create Temp Folder
+- name: Creating Temp Director
+  ansible.builtin.file:
+    path: /home/[YOUR USERNAME]/.tmp
+    state: directory
+    mode: '0777'
+
+- block:
+  - ansible.builtin.import_tasks: base_setup/001-locale.yml
+    when: ansible_os_family == "Debian"
+#  - ansible.builtin.import_tasks: base_setup/002-timezone.yml
+#    when: ansible_os_family == "Debian"
+  - ansible.builtin.import_tasks: base_setup/003-microcode.yml
+  - ansible.builtin.import_tasks: base_setup/004-commonApps.yml
+  - ansible.builtin.import_tasks: base_setup/005-autoremove.yml
+  - ansible.builtin.import_tasks: base_setup/006-addRPMFusion.yml

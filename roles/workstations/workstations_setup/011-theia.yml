@@ -1,0 +1,16 @@
+#Download the Theia IDE and place in a newly created AppImages folder
+- name: Creating Theia folder
+  ansible.builtin.file:
+    path: /home/[YOUR USERNAME]/AppImages
+    state: directory
+    owner: [YOUR USERNAME]
+    group: [YOUR USERNAME]
+
+- name: Downloading Theia
+  ansible.builtin.get_url:
+    url: https://www.eclipse.org/downloads/download.php?file=/theia/ide/latest/linux/TheiaIDE.AppImage&r=1
+    dest: /home/[YOUR USERNAME]/AppImages/TheiaIDE.AppImage
+    owner: [YOUR USERNAME]
+    group: [YOUR USERNAME]
+    mode: "0770"
+

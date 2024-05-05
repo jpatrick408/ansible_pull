@@ -1,0 +1,93 @@
+#Install VirtualBox with its extension pack
+
+#Pop_OS! Specific Install
+- name: Installing VirtualBox (Pop_OS! Specific)
+  ansible.builtin.apt:
+    name: virtualbox
+    state: latest
+  when: ansible_distribution == "Pop!_OS"
+
+#Debian Based
+- name: Copying VirtualBox Key (Debian Based)
+  ansible.builtin.copy:
+    src: ../files/oracle_vbox_2016.asc
+    dest: /home/[YOUR USERNAME]/.tmp/oracle_vbox_2016.asc
+  when: ansible_os_family == "Debian"
+  when: not ansible_distribution == "Pop!_OS"
+
+- name: Importing VirtulBox Key (Debian Based)
+  ansible.builtin.command: gpg --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg --dearmor /home/[YOUR USERNAME]/.tmp/oracle_vbox_2016.asc
+  when: ansible_os_family == "Debian"
+  when: not ansible_distribution == "Pop!_OS"
+
+- name: Importing VirtulBox Repo (Debian Based)
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian bookworm contrib
+  when: ansible_os_family == "Debian"
+  when: not ansible_distribution == "Pop!_OS"
+
+- name: Adding VirtualBox Repo (Debian  Based OS)
+  ansible.builtin.apt:
+    name: virtualbox-7.0
+    state: latest
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+  when: not ansible_distribution == "Pop!_OS"
+
+#Fedora Based
+- name: Importing VirtualBox Key (Fedora Based OS)
+  ansible.builtin.rpm_key:
+    key: https://www.virtualbox.org/download/oracle_vbox_2016.asc
+  when: ansible_os_family == "RedHat"
+
+- name: Adding VirtualBox Repo (Fedora Based OS)
+  ansible.builtin.yum_repository:
+    name: virtualbox
+    description: Fedora $releasever - $basearch - VirtualBox
+    baseurl: http://download.virtualbox.org/virtualbox/rpm/fedora/$releasever/$basearch
+    enabled: yes
+    gpgcheck: yes
+    repo_gpgcheck: true
+    gpgkey: https://www.virtualbox.org/download/oracle_vbox_2016.asc
+  when: ansible_os_family == "RedHat"
+
+- name: Installing VirtualBox (Fedora Based)
+  ansible.builtin.dnf:
+    name:
+      - kernel-devel
+      - akmod-VirtualBox
+      - VirtualBox
+    state: latest
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+#Install VirtualBox Extensions
+- name: Capturing VirtualBox Edition
+  ansible.builtin.shell: vboxmanage --version
+  register:  VBResults
+- debug:
+    msg: "{{ VBResults.stdout[:6] }}"
+  ignore_errors: true
+
+- name: Downloading VirtualBox Extension Pack
+  ansible.builtin.get_url:
+    url: https://download.virtualbox.org/virtualbox/{{ VBResults.stdout[:6] }}/Oracle_VM_VirtualBox_Extension_Pack-{{ VBResults.stdout[:6]  }}.vbox-extpack
+    dest: /home/[YOUR USERNAME]/.tmp//Oracle_VM_VirtualBox_Extension_Pack-{{ VBResults.stdout[:6]  }}.vbox-extpack
+    mode: '0777'
+
+#Thanks to the VBox forum for the echo trick (https://forums.virtualbox.org/viewtopic.php?p=427956#p427956)
+- name: Installing Extensions
+  ansible.builtin.shell:
+    cmd: echo y | VBoxManage extpack install --replace Oracle_VM_VirtualBox_Extension_Pack-{{ VBResults.stdout[:6]  }}.vbox-extpack
+    chdir: /home/[YOUR USERNAME]/.tmp/
+
+- name: Cleaning Temp File
+  ansible.builtin.file:
+    path: /home/[YOUR USERNAME]/.tmp//Oracle_VM_VirtualBox_Extension_Pack-{{ VBResults.stdout[:6]  }}.vbox-extpack
+    state: absent
+
+- name: Adding user to vboxusers group.
+  ansible.builtin.user:
+    name: [YOUR USERNAME]
+    groups: vboxusers
+    append: yes

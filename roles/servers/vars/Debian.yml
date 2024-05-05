@@ -1,0 +1,4 @@
+PHP: php
+SQL: sqlite3
+apache: apache2
+virtDrivers: qemu-guest-agent

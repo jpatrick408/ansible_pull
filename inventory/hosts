@@ -1,0 +1,40 @@
+---
+servers:
+  hosts:
+    git:
+    ansible:
+    unifi:
+    speedtest:
+    streaming:
+    pterodactyl:
+    docker:
+
+desktops:
+  hosts:
+    office:
+
+laptops:
+  hosts:
+    testdell1:
+    testdell2:
+    laptop:
+
+linMachines:
+  children:
+    servers:
+    desktop:
+    laptops:
+
+workstations:
+  children:
+    desktops:
+    laptops:
+
+winMachines:
+  hosts:
+
+unifiSwitches:
+  hosts:
+
+switches:
+

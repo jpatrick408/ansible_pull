@@ -1,0 +1,50 @@
+#Debian specific steps for setting up LibreSpeed
+- name: Librespeed - Install Debian Dependencies
+  ansible.builtin.apt:
+    pkg:
+      - apache2
+      - php
+    state: latest
+
+- name: Librespeed - Moving Backend Files
+  ansible.builtin.copy:
+    src: /home/jpatr/.tmp/speedtest/backend
+    dest: /var/www/html/
+    owner: "www-data"
+    group: "www-data"
+
+- name: Librespeed - Moving HTML File
+  ansible.builtin.copy:
+    src: /home/jpatr/.tmp/speedtest/index.html
+    dest: /var/www/html/index.html
+    owner: "www-data"
+    group: "www-data"
+
+- name: Librespeed - Moving speedtest. File
+  ansible.builtin.copy:
+    src: /home/jpatr/.tmp/speedtest/speedtest.
+    dest: /var/www/html/speedtest.
+    owner: "www-data"
+    group: "www-data"
+
+- name: Librespeed - Moving speedtest_worker. File
+  ansible.builtin.copy:
+    src: /home/jpatr/.tmp/speedtest/speedtest_worker.
+    dest: /var/www/html/speedtest_worker.
+    owner: "www-data"
+    group: "www-data"
+
+- name: Librespeed - Setting up Apache
+  ansible.builtin.copy:
+    src: speedHost-deb
+    dest: /etc/apache2/sites-available/speedtest.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Librespeed - Enabling Virtual Host
+  ansible.builtin.command: a2ensite speedtest
+
+- name: Librespeed - Restarting Apache2
+  ansible.builtin.service:
+    name: apache2

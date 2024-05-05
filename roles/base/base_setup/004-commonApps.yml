@@ -1,0 +1,24 @@
+- name: install Common Apps
+  ansible.builtin.package:
+    state: latest
+    name:
+      - colordiff
+      - "{{ lm_sensors_package }}"
+      - rsync
+      - tmux
+      - wget
+      - wget
+      - curl
+
+- name: Debian Based Specific Packages
+  ansible.builtin.apt:
+    state: latest
+    name: build-essential
+  when: ansible_os_family == "Debian"
+
+- name: Fedora Based Specific Packages
+  ansible.builtin.dnf:
+    name:
+      - '@Development tools'
+      - '@Development Libraries'
+  when: ansible_os_family == "RedHat"

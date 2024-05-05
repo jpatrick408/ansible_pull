@@ -1,0 +1,10 @@
+#Remove software that was automatically installed but no longer needed.
+- name: Autoremove (Debian Based)
+  ansible.builtin.apt:
+    autoremove: yes
+  when: ansible_os_family == "Debian"
+
+- name: Autoremove (Fedorian Based)
+  ansible.builtin.dnf:
+    autoremove: yes
+  when: ansible_os_family == "RedHat"

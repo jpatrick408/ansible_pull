@@ -1,0 +1,7 @@
+amd_microcode_package: linux-firmware
+lm_sensors_package: lm_sensors
+nfs_client_package: nfs-utils
+openssh_package: openssh-server
+openssh_service: ssh
+chromium_package: chromium
+py_psutils: python-psutil

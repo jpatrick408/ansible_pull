@@ -1,0 +1,19 @@
+#Load Variables
+- include_vars: "{{ ansible_os_family }}.yml"
+
+#Create Temp Folder
+- name: Creating Temp Director
+  ansible.builtin.file:
+    path: /home/[YOUR USERNAME]/.tmp
+    state: directory
+    mode: '0777'
+
+#- name: Basic Linux Setup
+- block:
+#  - import_tasks: basic_setup/locale.yml
+#  - import_tasks: basic_setup/timezone.yml
+#  - import_tasks: basic_setup/commonApps.yml
+#  - import_tasks: basic_setup/microcode.yml
+#  - import_tasks: basic_setup/autoremove.yml
+  when: ansible_system == "Linux"
+

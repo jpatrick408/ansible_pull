@@ -1,0 +1,28 @@
+#Setup jellyFin Media Server on Fedora Based Systems
+- name: Jellyfin - Setting up enX1 network
+  community.general.nmcli:
+    conn_name: enX1
+    ifname: enX1
+    type: ethernet
+    ip4: [YOUR SECOND IP]
+    gw4: [YOUR NAS IP]
+    state: present
+
+- name: Jellyfin - Mounting Media Share
+  ansible.posix.mount:
+    src: //[YOUR NAS IP]/media
+    path: /home/[YOUR USERNAME]/mediaMount
+    opts: "rw,credentials=/.streamCreds"
+    fstype: cifs
+    state: mounted
+
+- name: Jellyfin - Installing Jellyfin
+  ansible.builtin.dnf:
+    name: jellyfin
+    state: latest
+
+- name: Jellyfin - Starting/Enabling Jellyfin
+  ansible.builtin.systemd_service:
+    name: jellyfin
+    state: started
+    enabled: true

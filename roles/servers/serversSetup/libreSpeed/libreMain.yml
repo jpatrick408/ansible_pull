@@ -1,0 +1,17 @@
+#Load install play based on OS.  This will skip all of the other plays without display all of the messags.
+
+- name: Jellyfin - Creating Folder
+  ansible.builtin.file:
+    path: /home/patr/.tmp/speedtest
+    state: directory
+
+- name: Jellyfin - Cloning LibreSpeed
+  ansible.builtin.git:
+    repo: https://github.com/librespeed/speedtest.git
+    dest: /home/jpatr/.tmp/speedtest/
+
+- ansible.builtin.import_tasks: serversSetup/libreSpeed/debBased.yml
+  when: ansible_os_family == "Debian"
+
+- ansible.builtin.import_tasks: serversSetup/libreSpeed/fedBased.yml
+  when: ansible_os_family == "RedHat"

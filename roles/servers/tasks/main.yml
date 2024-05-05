@@ -1,0 +1,23 @@
+#Load Variables
+- ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install Qemu Guest Agent
+  ansible.builtin.package:
+    state: latest
+    name:
+      - "{{ virtDrivers }}"
+
+#Individual Server Setup
+- block:
+    #LibreSpeed Speed test server
+  - ansible.builtin.import_tasks: ../serversSetup/libreSpeed/libreMain.yml
+    when: inventory_hostname == "speedtest"
+
+#    #Jellyfin Media Server
+#  - ansible.builtin.import_tasks: ../serversSetup/Jellyfin/jellyMain.yml
+#    when: inventory_hostname == "streaming"
+
+#Setup Docker server
+  #- ansible.builtin.import_task: ../serverSetup/docker/dockerMain.yml
+  #when: inventory_hostname == "docker"
+
