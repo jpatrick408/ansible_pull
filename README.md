@@ -1,10 +1,10 @@
+This playbook is no longer being up dated. Please refer to my homelab playbook for updates.
+
 #ansible-pull
 
 This is a generic version of my Ansible Pull playbook for setting up and restoring systems in my home lab.  If you want to use it, please review each section and update it to your needs.  Pay special attention to the areas with [BRACKETS].  You will need to replace that text with your personal settings.
 
 If you have questions, please let me know and I will do my best to assist.
-
-This is an active project but it is not updated frequently.   What I have here is mostly stable and I will only be updating when I haved new machines to deploy or there is an update in the way a system works.
 
 References!  I always try to give credit when credit is due.
 - Most of what I have learned came from the following:
