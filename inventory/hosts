@@ -11,7 +11,7 @@ servers:
 
 desktops:
   hosts:
-    office:
+    jsoffice:
 
 laptops:
   hosts:
